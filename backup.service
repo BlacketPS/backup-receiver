@@ -1,0 +1,6 @@
+[Unit]
+Description=Blacket Database Backup Service
+
+[Service]
+WorkingDirectory=/etc/systemd/system
+ExecStart=/bin/bash backup.sh
