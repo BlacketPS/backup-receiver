@@ -2,5 +2,6 @@
 Description=Blacket Database Backup Service
 
 [Service]
-WorkingDirectory=/etc/systemd/system
-ExecStart=/bin/bash backup.sh
+User=xotic
+WorkingDirectory=/home/xotic/backup-receiver
+ExecStart=/home/xotic/backup-receiver/backup.sh
