@@ -12,6 +12,8 @@ mkdir -p ./backups
 touch ./logs.txt
 
 FILE_NAME="backup_$(date +'%Y-%m-%d_%H-%M-%S').sql"
+BACKUP_PATH="./backups/$FILE_NAME"
+COMPRESSED_PATH="$BACKUP_PATH.7z"
 
 echo "$PREFIX INFO: starting backup to $FILE_NAME" >> ./logs.txt
 
@@ -21,8 +23,19 @@ else
   DUMP_CMD="pg_dumpall"
 fi
 
-if ssh "$USER@$REMOTE" "$DUMP_CMD" > "./backups/$FILE_NAME"; then
+if ssh "$USER@$REMOTE" "$DUMP_CMD" > "$BACKUP_PATH"; then
   echo "$PREFIX SUCCESS: backup created for $FILE_NAME" >> ./logs.txt
+
+  SEVEN_ZIP="/c/Program Files/7-Zip/7z.exe"
+
+  if "$SEVEN_ZIP" a -t7z "$COMPRESSED_PATH" "$BACKUP_PATH"; then
+    echo "$PREFIX SUCCESS: compressed $FILE_NAME to $(basename "$COMPRESSED_PATH")" >> ./logs.txt
+
+    rm "$BACKUP_PATH"
+    echo "$PREFIX INFO: deleted uncompressed file $FILE_NAME" >> ./logs.txt
+  else
+    echo "$PREFIX ERROR: compression failed for $FILE_NAME" >> ./logs.txt
+  fi
 else
   echo "$PREFIX ERROR: backup failed for $FILE_NAME" >> ./logs.txt
 fi
